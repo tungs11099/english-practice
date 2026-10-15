@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff7e8">
+  <title>英文星球｜三年級英文練習</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="英文星球首頁"><span class="brand-icon">🚀</span><span>英文<span class="brand-accent">星球</span></span></a>
+    <div class="top-note">每天一點點，英文進步多一點！ <span>⭐</span></div>
+  </header>
+  <main id="app" class="shell">
+    <section id="home" class="view active" aria-labelledby="welcome-title">
+      <div class="hero">
+        <div class="hero-copy"><p class="eyebrow">WELCOME, LITTLE EXPLORER!</p><h1 id="welcome-title">準備好開始<br><span>英文冒險</span>了嗎？</h1><p>選一個喜歡的活動，出發去探索單字星球吧！</p><button class="button button-primary" data-go="words">開始學習 <span>→</span></button></div>
+        <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="planet">📚</div><span class="float-star star-a">✦</span><span class="float-star star-b">✦</span><span class="float-star star-c">✧</span><span class="float-cloud">☁️</span><span class="float-book">🔤</span></div>
+      </div>
+      <div class="section-heading"><div><p class="eyebrow">CHOOSE YOUR MISSION</p><h2>今天想玩什麼？</h2></div><span class="heading-doodle">✳</span></div>
+      <div class="feature-grid">
+        <button class="feature-card card-words" data-go="words"><span class="feature-icon">📖</span><span class="feature-text"><strong>單字學習</strong><small>認識新朋友</small></span><span class="card-arrow">↗</span></button>
+        <button class="feature-card card-quiz" data-mode="enToZh"><span class="feature-icon">🧩</span><span class="feature-text"><strong>英文選擇題</strong><small>挑戰 10 道題目</small></span><span class="card-arrow">↗</span></button>
+        <button class="feature-card card-picture" data-mode="picture"><span class="feature-icon">🖼️</span><span class="feature-text"><strong>看圖猜單字</strong><small>看圖選英文</small></span><span class="card-arrow">↗</span></button>
+        <button class="feature-card card-review" data-go="mistakes"><span class="feature-icon">💡</span><span class="feature-text"><strong>錯題複習</strong><small>複習會的更牢</small></span><span class="card-arrow">↗</span><span id="mistake-badge" class="badge">0</span></button>
+        <button class="feature-card card-record" data-go="records"><span class="feature-icon">🏆</span><span class="feature-text"><strong>學習紀錄</strong><small>看看努力成果</small></span><span class="card-arrow">↗</span></button>
+      </div>
+      <div class="quick-quiz"><div><span class="quick-icon">🎯</span><span><strong>準備好小挑戰了嗎？</strong><small>選擇題有三種玩法喔！</small></span></div><button class="button button-outline" data-go="quizMenu">選擇題模式 <span>→</span></button></div>
+    </section>
+
+    <section id="words" class="view" aria-labelledby="words-title"><div class="page-heading"><button class="back-button" data-go="home">← 回首頁</button><p class="eyebrow">WORD EXPLORER</p><h1 id="words-title">單字學習 <span>📖</span></h1><p>點擊喇叭聽聽看，也可以用左右按鈕翻卡片。</p></div><div class="word-toolbar"><div id="category-list" class="category-list" aria-label="單字分類"></div><span id="word-count" class="muted"></span></div><div id="word-card" class="word-card"></div><div class="card-controls"><button class="button button-outline" id="previous-word">← 上一個</button><span id="word-position" class="position-pill"></span><button class="button button-primary" id="next-word">下一個 →</button></div></section>
+
+    <section id="quizMenu" class="view" aria-labelledby="quiz-menu-title"><div class="page-heading"><button class="back-button" data-go="home">← 回首頁</button><p class="eyebrow">PICK A CHALLENGE</p><h1 id="quiz-menu-title">選擇題模式 <span>🧩</span></h1><p>每回合 10 題，答對一題就得到 10 分！</p></div><div class="mode-grid"><button class="mode-card" data-mode="enToZh"><span>🔤</span><strong>英文找中文</strong><small>看到英文，選出正確意思</small><b>開始挑戰 →</b></button><button class="mode-card" data-mode="zhToEn"><span>💬</span><strong>中文找英文</strong><small>看到中文，選出英文單字</small><b>開始挑戰 →</b></button><button class="mode-card" data-mode="picture"><span>🖼️</span><strong>看圖猜單字</strong><small>看圖選出正確的英文</small><b>開始挑戰 →</b></button></div></section>
+
+    <section id="quiz" class="view" aria-labelledby="quiz-title"><div class="quiz-top"><button class="back-button" data-go="quizMenu">← 選其他模式</button><span id="quiz-score" class="score-pill">⭐ 0 分</span></div><div class="progress-line"><div id="quiz-progress"></div></div><div id="quiz-area" class="quiz-area"></div></section>
+    <section id="result" class="view" aria-labelledby="result-title"><div id="result-card" class="result-card"></div></section>
+
+    <section id="mistakes" class="view" aria-labelledby="mistakes-title"><div class="page-heading"><button class="back-button" data-go="home">← 回首頁</button><p class="eyebrow">A LITTLE MORE PRACTICE</p><h1 id="mistakes-title">錯題複習 <span>💡</span></h1><p>不用擔心，練習幾次就會記起來！</p></div><div id="mistakes-content"></div></section>
+    <section id="records" class="view" aria-labelledby="records-title"><div class="page-heading"><button class="back-button" data-go="home">← 回首頁</button><p class="eyebrow">YOUR LEARNING JOURNEY</p><h1 id="records-title">學習紀錄 <span>🏆</span></h1><p>每一次練習，都讓你更進步！</p></div><div id="records-content"></div></section>
+  </main>
+  <footer>🌱 每天練習一點點，就會看見自己的進步！</footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="js/words.js"></script><script src="js/storage.js"></script><script src="js/quiz.js"></script><script src="js/app.js"></script>
+</body>
+</html>
