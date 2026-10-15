@@ -1,8 +1,4 @@
-/* 測驗的出題、選項與作答流程。 */
-const QUIZ_LENGTH=10;
-const MODES={enToZh:'英文找中文',zhToEn:'中文找英文',picture:'看圖猜單字',review:'錯題複習'};
-function shuffled(items){const result=[...items];for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}return result;}
-function makeQuestions(mode, source=WORDS, optionPool=source){
-  const pool=shuffled([...source]);
-  return pool.slice(0,Math.min(QUIZ_LENGTH,pool.length)).map(word=>({word,options:shuffled([word,...shuffled(optionPool.filter(item=>item.en!==word.en)).slice(0,3)])}));
-}
+const QUESTION_COUNT=10, PASS_RATE=.8;
+const MODES={enToZh:'英文找中文',zhToEn:'中文找英文',audio:'聽力挑戰',picture:'看圖猜英文'};
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function makeQuestions(mode,source,all){const unique=[...new Map(source.map(w=>[w.id,w])).values()],n=Math.min(QUESTION_COUNT,unique.length);if(unique.length<4)throw Error(`這個範圍只有 ${unique.length} 個單字，至少需要 4 個才能出題，請增加教材或選擇較大的範圍。`);return shuffle(unique).slice(0,n).map(word=>{const label=w=>mode==='enToZh'?w.chinese:w.english;const candidates=[...new Map(all.filter(w=>w.id!==word.id&&label(w)!==label(word)).map(w=>[label(w),w])).values()];if(candidates.length<3)throw Error('可用的不同選項不足 4 個，請增加教材。');return {word,options:shuffle([word,...shuffle(candidates).slice(0,3)]),mode}})}

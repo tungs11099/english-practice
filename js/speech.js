@@ -1,0 +1,1 @@
+function speakEnglish(text){if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){alert('此瀏覽器目前不支援語音播放，請改用較新的瀏覽器。');return false}try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.82;speechSynthesis.speak(u);return true}catch(e){alert('語音播放暫時無法使用。');return false}}

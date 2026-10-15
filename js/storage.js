@@ -1,17 +1,14 @@
-/* 所有學習紀錄都存放在這個瀏覽器的 localStorage。 */
-const STORAGE_KEY = 'english-star-planet-v1';
-function emptyStats(){return {rounds:0,answered:0,correct:0,studied:[],mistakes:[],sessions:[]};}
-function loadStats(){
-  try {const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)); if(!saved || typeof saved!=='object')return emptyStats(); return {...emptyStats(),...saved,studied:Array.isArray(saved.studied)?saved.studied:[],mistakes:Array.isArray(saved.mistakes)?saved.mistakes:[],sessions:Array.isArray(saved.sessions)?saved.sessions:[]};}
-  catch(error){return emptyStats();}
-}
-let stats = loadStats();
-function saveStats(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(stats));return true;}catch(error){return false;}}
-function recordAnswer(word, correct){
-  if(!stats.studied.includes(word.en)) stats.studied.push(word.en);
-  if(correct){stats.correct++;stats.mistakes=stats.mistakes.filter(item=>item!==word.en);}
-  else if(!stats.mistakes.includes(word.en)) stats.mistakes.push(word.en);
-  stats.answered++;saveStats();
-}
-function recordRound(score, total, mode){stats.rounds++;stats.sessions.unshift({score,total,mode,date:new Date().toISOString()});stats.sessions=stats.sessions.slice(0,20);saveStats();}
-function clearMistakes(){stats.mistakes=[];saveStats();}
+const DATA_KEY='english-practice-data-v2';
+function blankData(){return {version:2,words:SAMPLE_WORDS.map(w=>({...w})),stats:{rounds:0,answered:0,correct:0,familiar:[],mistakes:{},levels:{},stars:0,unitProgress:{},lastPractice:null,sessions:[]}}}
+function validData(d){return d&&typeof d==='object'&&Array.isArray(d.words)&&d.stats&&typeof d.stats==='object'&&d.words.every(w=>w&&typeof w.id==='string'&&typeof w.english==='string'&&typeof w.chinese==='string')}
+let data=blankData(), storageAvailable=false, storageBlocked=false;
+try{const raw=localStorage.getItem(DATA_KEY);storageAvailable=true;if(raw){const parsed=JSON.parse(raw);if(validData(parsed)){data={...blankData(),...parsed,stats:{...blankData().stats,...parsed.stats}}}else{storageBlocked=true;console.warn('學習資料格式錯誤；原資料保留未覆寫。')}}}catch(e){storageBlocked=true;console.warn('目前無法讀取本機學習紀錄；不會寫入預設資料覆蓋原紀錄。',e)}
+function persist(){if(storageBlocked)return false;try{localStorage.setItem(DATA_KEY,JSON.stringify(data));storageAvailable=true;return true}catch(e){storageAvailable=false;return false}}
+function getWords(){return data.words.filter(w=>w.enabled!==false)}
+function recordAnswer(word,correct){const s=data.stats;s.answered++;if(correct){s.correct++;s.familiar=[...new Set([...s.familiar,word.id])];if(s.mistakes[word.id]){s.mistakes[word.id].pending=false;s.mistakes[word.id].reviews=(s.mistakes[word.id].reviews||0)+1}}else{s.mistakes[word.id]={pending:true,wrong:(s.mistakes[word.id]?.wrong||0)+1,reviews:s.mistakes[word.id]?.reviews||0,last:new Date().toISOString()};s.familiar=s.familiar.filter(id=>id!==word.id)}s.lastPractice=new Date().toISOString();persist()}
+function recordRound({score,total,correct,mode,unit,level,passed}){const s=data.stats;s.rounds++;s.sessions.unshift({score,total,correct,mode,unit,level,passed,date:new Date().toISOString()});s.sessions=s.sessions.slice(0,100);if(unit){s.unitProgress[unit]=(s.unitProgress[unit]||0)+1}if(passed&&level){if(!s.levels[level]){s.levels[level]={completed:true};s.stars+=3}else s.levels[level].completed=true}persist()}
+function clearMistakes(){data.stats.mistakes={};persist()}
+function importBackup(candidate){if(!validData(candidate)||candidate.version!==2||!candidate.stats||!Array.isArray(candidate.stats.familiar)||!candidate.stats.mistakes||!candidate.stats.levels)throw Error('備份格式不正確');const ids=new Set();for(const w of candidate.words){if(!w.id||ids.has(w.id)||typeof w.enabled!=='boolean'||!['example','exampleChinese','category','semester','lesson','image','phonetic'].every(k=>typeof w[k]==='string'))throw Error('備份中的教材欄位不完整或識別碼重複');ids.add(w.id)}data={...candidate,stats:{...blankData().stats,...candidate.stats}};if(!persist())throw Error('無法寫入本機儲存空間')}
+function addWords(words){const ids=new Set(data.words.map(w=>`${w.english.toLocaleLowerCase()}|${w.semester}|${w.lesson}`));const additions=[];for(const row of words){const key=`${row.english.toLocaleLowerCase()}|${row.semester}|${row.lesson}`;if(ids.has(key))continue;ids.add(key);additions.push({...row,id:`word-${Date.now()}-${Math.random().toString(36).slice(2,9)}`,image:row.image||'🔤',phonetic:row.phonetic||'',enabled:true})}data.words.push(...additions);if(additions.length&&!persist()){data.words.splice(-additions.length);throw Error('無法儲存教材，請檢查瀏覽器儲存空間')}return additions.length}
+function updateWord(id,patch){const word=data.words.find(w=>w.id===id);if(!word)return false;Object.assign(word,patch);persist();return true}
+function removeWord(id){const index=data.words.findIndex(w=>w.id===id);if(index<0)return;const [old]=data.words.splice(index,1);if(!persist())data.words.splice(index,0,old)}
